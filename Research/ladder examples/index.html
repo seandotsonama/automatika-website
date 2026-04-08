@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automatika - Axis A Advance Cylinder Control</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f4f8;
+    color: #333;
+    padding: 40px 20px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .header h1 {
+    font-size: 24px;
+    color: #1a365d;
+    margin-bottom: 6px;
+  }
+  .header p {
+    color: #666;
+    font-size: 13px;
+  }
+  .ladder {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 24px;
+  }
+  .ladder h2 {
+    font-size: 18px;
+    color: #2b6cb0;
+    border-bottom: 2px solid #cbd5e0;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+  }
+  .rung-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .rung-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .rung-card .rung-header {
+    background: #edf2f7;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a5568;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .rung-card .rung-header span {
+    font-weight: 400;
+    color: #888;
+    margin-left: 8px;
+    font-size: 12px;
+  }
+  .rung-card .rung-body {
+    padding: 12px;
+    text-align: center;
+    background: #fafbfc;
+  }
+  .rung-card .rung-body img {
+    max-width: 100%;
+    height: auto;
+  }
+  .rung-card .rung-desc {
+    padding: 8px 14px;
+    font-size: 12px;
+    color: #718096;
+    border-top: 1px solid #e2e8f0;
+  }
+  .legend {
+    margin-top: 24px;
+    padding: 14px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #666;
+  }
+  .legend h3 {
+    font-size: 13px;
+    color: #4a5568;
+    margin-bottom: 6px;
+  }
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .legend-swatch {
+    width: 24px;
+    height: 4px;
+    border-radius: 2px;
+  }
+  .lib-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+  }
+  .lib-link a {
+    color: #2b6cb0;
+    text-decoration: none;
+  }
+  .lib-link a:hover {
+    text-decoration: underline;
+  }
+  .footer {
+    text-align: center;
+    color: #999;
+    font-size: 11px;
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Axis A Advance - Cylinder Control</h1>
+  <p>Automatika Ladder Logic Example | Rockwell ControlLogix Style</p>
+</div>
+
+<div class="ladder">
+  <h2>Program: Axis_A_Advance</h2>
+
+  <div class="rung-card">
+    <div class="rung-header">Rung 0 <span>Safety Interlock</span></div>
+    <div class="rung-body">
+      <img src="rung_0.svg" alt="Rung 0 - Safety Interlock">
+    </div>
+    <div class="rung-desc">
+      XIC(FC.0) XIO(A_Advance.Fault) XIC(B_Retract.InPos) &rarr; OTE(A_Advance.Safe)
+      &mdash; All conditions TRUE, output energized (green)
+    </div>
+  </div>
+
+  <div class="rung-card">
+    <div class="rung-header">Rung 1 <span>Trigger Latch (Always False)</span></div>
+    <div class="rung-body">
+      <img src="rung_1.svg" alt="Rung 1 - AFI Trigger Latch">
+    </div>
+    <div class="rung-desc">
+      AFI &rarr; OTL(A_Advance.Trig)
+      &mdash; Always False Instruction prevents latch, rung never energized
+    </div>
+  </div>
+
+  <div class="rung-card">
+    <div class="rung-header">Rung 2 <span>Auto/Manual Command with Seal-In</span></div>
+    <div class="rung-body">
+      <img src="rung_2.svg" alt="Rung 2 - Auto/Manual Command">
+    </div>
+    <div class="rung-desc">
+      Branch 1: XIC(AutoMode) XIC(A_Advance.Trig) | Branch 2: XIC(ManualMode) XIC(A_Advance.PB)
+      &rarr; XIC(A_Advance.Safe) XIO(A_Advance.InPos) OTE(A_Advance.Cmd) with seal-in via XIC(A_Advance.Cmd)
+    </div>
+  </div>
+
+  <div class="rung-card">
+    <div class="rung-header">Rung 3 <span>Position Detection</span></div>
+    <div class="rung-body">
+      <img src="rung_3.svg" alt="Rung 3 - Position Detection">
+    </div>
+    <div class="rung-desc">
+      Branch 1: XIC(A_ADV_INPUT) XIO(A_RET_INPUT) | Branch 2: XIO(A_ADV_INPUT) XIC(A_RET_INPUT)
+      &rarr; OTE(A_Advance.InPos) / OTE(A_Advance.Retracted)
+    </div>
+  </div>
+
+  <div class="rung-card">
+    <div class="rung-header">Rung 4 <span>Fault Detection Timer</span></div>
+    <div class="rung-body">
+      <img src="rung_4.svg" alt="Rung 4 - Fault Detection">
+    </div>
+    <div class="rung-desc">
+      XIC(A_Advance.Cmd) XIO(A_Advance.InPos) &rarr; TON(A_Advance.FaultTMR, 5000ms)
+      with seal-in via XIC(A_Advance.Fault) &rarr; XIO(FaultTMR.DN) OTE(A_Advance.Fault)
+    </div>
+  </div>
+
+  <div class="legend">
+    <h3>Legend</h3>
+    <div class="legend-row">
+      <div class="legend-swatch" style="background: #00cc44;"></div>
+      Energized wire / contact / coil (power flowing)
+    </div>
+    <div class="legend-row">
+      <div class="legend-swatch" style="background: #555;"></div>
+      Unenergized wire / element (no power)
+    </div>
+    <div class="legend-row">
+      <div class="legend-swatch" style="background: #FFFF00; border: 1px solid #ccc;"></div>
+      Tag annotation (description + address)
+    </div>
+    <div class="legend-row">
+      <div class="legend-swatch" style="background: #c8f5c8; border: 1px solid #aaddaa;"></div>
+      Green glow behind energized elements
+    </div>
+  </div>
+
+  <div class="lib-link">
+    <a href="../svg/index.html">View Element Library &rarr;</a>
+  </div>
+</div>
+
+<div class="footer">
+  Automatika Ladder Logic Example | Axis A Advance Cylinder Control | Suncoast Venture Studio | March 2026
+</div>
+
+</body>
+</html>

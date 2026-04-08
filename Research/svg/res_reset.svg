@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 100" width="180" height="100">
+  <title>RES - Reset</title>
+  <style>
+    text { font-family: 'Segoe UI', Arial, sans-serif; }
+  </style>
+
+  <line x1="10" y1="60" x2="40" y2="60" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="40" y="40" width="100" height="40" rx="5" fill="#fff0f0" stroke="#cc4444" stroke-width="2"/>
+  <text x="90" y="62" fill="#cc4444" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="middle">RES</text>
+  <line x1="140" y1="60" x2="170" y2="60" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="90" y="16" fill="#333" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="middle">Rst_Cntr</text>
+  <text x="90" y="30" fill="#888" font-size="12" text-anchor="middle" dominant-baseline="middle">C5:0</text>
+  <text x="90" y="92" fill="#999" font-size="9" text-anchor="middle" dominant-baseline="middle">Reset</text>
+
+</svg>

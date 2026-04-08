@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 265" width="440" height="265">
+  <title>SQO - Sequencer Output</title>
+  <style>
+    text { font-family: 'Segoe UI', Arial, sans-serif; }
+  </style>
+
+  <line x1="0" y1="34" x2="50" y2="34" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="50" y="10" width="300" height="230" rx="0" fill="#e8f0f8" stroke="#4a6fa5" stroke-width="2"/>
+  <line x1="50" y1="48" x2="350" y2="48" stroke="#4a6fa5" stroke-width="1.5"/>
+  <text x="62" y="34" fill="#4a6fa5" font-size="18" font-weight="700">SQO</text>
+  <text x="130" y="34" fill="#4a6fa5" font-size="16" font-weight="400">Sequencer Output</text>
+  <line x1="50" y1="90" x2="350" y2="90" stroke="#ccc" stroke-width="0.5"/>
+  <text x="62" y="72" fill="#333" font-size="16" font-weight="500">File</text>
+  <text x="338" y="72" fill="#333" font-size="16" font-weight="bold" text-anchor="end">Seq_Out</text>
+  <line x1="50" y1="132" x2="350" y2="132" stroke="#ccc" stroke-width="0.5"/>
+  <text x="62" y="114" fill="#333" font-size="16" font-weight="500">Mask</text>
+  <text x="338" y="114" fill="#333" font-size="16" font-weight="500" text-anchor="end">FFFFh</text>
+  <line x1="50" y1="174" x2="350" y2="174" stroke="#ccc" stroke-width="0.5"/>
+  <text x="62" y="156" fill="#333" font-size="16" font-weight="500">Dest</text>
+  <text x="338" y="156" fill="#333" font-size="16" font-weight="500" text-anchor="end">O:2</text>
+  <text x="62" y="198" fill="#333" font-size="16" font-weight="500">Length: 8</text>
+  <text x="338" y="198" fill="#333" font-size="16" font-weight="500" text-anchor="end">Pos: 0</text>
+  <line x1="350" y1="34" x2="400" y2="34" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="200" y="258" fill="#888" font-size="14" text-anchor="middle">SQ:0</text>
+
+</svg>

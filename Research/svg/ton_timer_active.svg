@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 225" width="440" height="225">
+  <title>TON - Timer On Delay (Active)</title>
+  <style>
+    text { font-family: 'Segoe UI', Arial, sans-serif; }
+  </style>
+
+  <rect x="48" y="8" width="304" height="194" rx="4" fill="#c8f5c8" opacity="0.5"/>
+  <line x1="0" y1="34" x2="50" y2="34" stroke="#00cc44" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="50" y="10" width="300" height="190" rx="0" fill="#f0faf0" stroke="#006600" stroke-width="2"/>
+  <line x1="50" y1="48" x2="350" y2="48" stroke="#006600" stroke-width="1.5"/>
+  <text x="62" y="34" fill="#006600" font-size="18" font-weight="700">TON</text>
+  <text x="130" y="34" fill="#006600" font-size="16" font-weight="400">Timer On Delay</text>
+  <line x1="50" y1="90" x2="350" y2="90" stroke="#afa" stroke-width="0.5"/>
+  <text x="62" y="72" fill="#006600" font-size="16" font-weight="500">Timer</text>
+  <text x="338" y="72" fill="#006600" font-size="16" font-weight="bold" text-anchor="end">Dly_Timer</text>
+  <line x1="50" y1="132" x2="350" y2="132" stroke="#afa" stroke-width="0.5"/>
+  <text x="62" y="114" fill="#006600" font-size="16" font-weight="500">Preset</text>
+  <text x="295" y="114" fill="#006600" font-size="16" font-weight="500" text-anchor="end">5000</text>
+  <polygon points="302,114 312,109 312,119" fill="#006600"/>
+  <text x="62" y="156" fill="#006600" font-size="16" font-weight="500">Accum</text>
+  <text x="295" y="156" fill="#006600" font-size="16" font-weight="500" text-anchor="end">3000</text>
+  <polygon points="302,156 312,151 312,161" fill="#006600"/>
+  <line x1="350" y1="34" x2="400" y2="34" stroke="#00cc44" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="385" y="26" fill="#006600" font-size="14" font-weight="500" text-anchor="middle">(EN)</text>
+  <line x1="350" y1="156" x2="400" y2="156" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="385" y="172" fill="#333" font-size="14" font-weight="500" text-anchor="middle">(DN)</text>
+  <text x="200" y="218" fill="#888" font-size="14" text-anchor="middle">T4:0</text>
+
+</svg>

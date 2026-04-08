@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automatika — HMI Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #e8ecf1;
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* ── 3×3 Grid ─────────────────────────────────── */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── Panel Cards ──────────────────────────────── */
+    .panel {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .panel-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #3b82f6;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    /* ── Build Animation ──────────────────────────── */
+    @keyframes buildIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.85) translateY(12px);
+        filter: blur(6px);
+      }
+      60% {
+        opacity: 1;
+        transform: scale(1.02) translateY(-2px);
+        filter: blur(0px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0px);
+      }
+    }
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+      50% { box-shadow: 0 0 20px 4px rgba(59,130,246,0.15); }
+      100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+    }
+
+    .panel {
+      opacity: 0;
+      transform: scale(0.85) translateY(12px);
+      filter: blur(6px);
+    }
+    .panel.built {
+      animation: buildIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+                 glowPulse 0.8s ease-out 0.5s forwards;
+    }
+
+    /* Scanline overlay during build */
+    .build-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .build-overlay.active {
+      opacity: 1;
+    }
+    .build-overlay::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #3b82f6, #8b5cf6, transparent);
+      animation: scanDown 3s linear infinite;
+    }
+    @keyframes scanDown {
+      0% { top: 0; opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ── Vertical Bar Gauge ───────────────────────── */
+    .bar-gauge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .bar-track {
+      width: 44px;
+      height: 150px;
+      background: #e2e8f0;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+    }
+    .bar-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, #3b82f6, #60a5fa);
+      border-radius: 0 0 5px 5px;
+      transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .bar-scale {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+    .bar-tick {
+      font-size: 0.6rem;
+      color: #94a3b8;
+      text-align: right;
+      padding-right: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .bar-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .bar-unit {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* ── SVG Arc Gauge ────────────────────────────── */
+    .arc-gauge-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .arc-gauge {
+      position: relative;
+      width: 190px;
+      height: 125px;
+    }
+    .arc-gauge svg {
+      width: 100%;
+      height: 100%;
+    }
+    .arc-bg {
+      fill: none;
+      stroke: #e2e8f0;
+      stroke-width: 14;
+      stroke-linecap: round;
+    }
+    .arc-fill {
+      fill: none;
+      stroke: #3b82f6;
+      stroke-width: 14;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .arc-warning {
+      fill: none;
+      stroke: #ef4444;
+      stroke-width: 14;
+      stroke-linecap: round;
+    }
+    .arc-value-group {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    .arc-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1;
+    }
+    .arc-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .arc-scale-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.55rem;
+      fill: #94a3b8;
+    }
+    .arc-gauge-subtitle {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 8px;
+    }
+
+    /* ── Control Cards (Row 3) ────────────────────── */
+    .control-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .input-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      width: 36px;
+      flex-shrink: 0;
+    }
+    .input-group input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      background: #fff;
+      color: #1e293b;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input-group input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+    .input-group input::placeholder {
+      color: #94a3b8;
+    }
+    .control-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 2px;
+    }
+    .btn {
+      flex: 1;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-submit {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+    }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59,130,246,0.35);
+    }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-clear {
+      background: #e2e8f0;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+    .btn-clear:hover {
+      background: #cbd5e1;
+    }
+
+    /* ── Feedback Toast ───────────────────────────── */
+    .toast {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #16a34a;
+      text-align: center;
+      min-height: 20px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .toast.show { opacity: 1; }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 800px) {
+      .dashboard-grid { grid-template-columns: 1fr; max-width: 400px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scanline overlay during build -->
+  <div class="build-overlay" id="buildOverlay"></div>
+
+  <div class="dashboard-grid">
+
+    <!-- ═══ ROW 1: Bar Gauges ═══════════════════════ -->
+
+    <!-- Water -->
+    <div class="panel" data-build="0">
+      <div class="panel-label">Water</div>
+      <div class="bar-gauge">
+        <div class="bar-track">
+          <div class="bar-fill" id="waterFill" style="height: 0%;"></div>
+          <div class="bar-scale">
+            <span class="bar-tick">100</span>
+            <span class="bar-tick">80</span>
+            <span class="bar-tick">60</span>
+            <span class="bar-tick">40</span>
+            <span class="bar-tick">20</span>
+            <span class="bar-tick">0</span>
+          </div>
+        </div>
+        <div class="bar-value" id="waterVal">--</div>
+        <div class="bar-unit">l/min</div>
+      </div>
+    </div>
+
+    <!-- Speed -->
+    <div class="panel" data-build="1">
+      <div class="panel-label">Speed</div>
+      <div class="bar-gauge">
+        <div class="bar-track">
+          <div class="bar-fill" id="speedFill" style="height: 0%;"></div>
+          <div class="bar-scale">
+            <span class="bar-tick">100</span>
+            <span class="bar-tick">80</span>
+            <span class="bar-tick">60</span>
+            <span class="bar-tick">40</span>
+            <span class="bar-tick">20</span>
+            <span class="bar-tick">0</span>
+          </div>
+        </div>
+        <div class="bar-value" id="speedVal">--</div>
+        <div class="bar-unit">km/h</div>
+      </div>
+    </div>
+
+    <!-- Weight -->
+    <div class="panel" data-build="2">
+      <div class="panel-label">Weight</div>
+      <div class="bar-gauge">
+        <div class="bar-track">
+          <div class="bar-fill" id="weightFill" style="height: 0%;"></div>
+          <div class="bar-scale">
+            <span class="bar-tick">100</span>
+            <span class="bar-tick">80</span>
+            <span class="bar-tick">60</span>
+            <span class="bar-tick">40</span>
+            <span class="bar-tick">20</span>
+            <span class="bar-tick">0</span>
+          </div>
+        </div>
+        <div class="bar-value" id="weightVal">--</div>
+        <div class="bar-unit">kg</div>
+      </div>
+    </div>
+
+    <!-- ═══ ROW 2: Arc Gauges ══════════════════════ -->
+
+    <!-- Gauge 1 -->
+    <div class="panel" data-build="3">
+      <div class="arc-gauge-card">
+        <div class="panel-label">Meter 1</div>
+        <div class="arc-gauge">
+          <svg viewBox="0 0 200 120">
+            <text class="arc-scale-label" x="18" y="112">0</text>
+            <text class="arc-scale-label" x="6" y="65">40</text>
+            <text class="arc-scale-label" x="45" y="18">60</text>
+            <text class="arc-scale-label" x="95" y="8">80</text>
+            <text class="arc-scale-label" x="145" y="18">100</text>
+            <path class="arc-bg" d="M 25 105 A 75 75 0 1 1 175 105" />
+            <path class="arc-fill" d="M 25 105 A 75 75 0 1 1 175 105"
+              stroke-dasharray="353" stroke-dashoffset="353" id="gauge1Fill" />
+            <path class="arc-warning" d="M 25 105 A 75 75 0 1 1 175 105"
+              stroke-dasharray="353" stroke-dashoffset="318" />
+          </svg>
+          <div class="arc-value-group">
+            <div class="arc-val" id="gauge1Val">--</div>
+            <div class="arc-label">Meter</div>
+          </div>
+        </div>
+        <div class="arc-gauge-subtitle">Example</div>
+      </div>
+    </div>
+
+    <!-- Gauge 2 -->
+    <div class="panel" data-build="4">
+      <div class="arc-gauge-card">
+        <div class="panel-label">Meter 2</div>
+        <div class="arc-gauge">
+          <svg viewBox="0 0 200 120">
+            <text class="arc-scale-label" x="18" y="112">0</text>
+            <text class="arc-scale-label" x="10" y="65">25</text>
+            <text class="arc-scale-label" x="55" y="18">50</text>
+            <text class="arc-scale-label" x="145" y="18">75</text>
+            <text class="arc-scale-label" x="170" y="65">100</text>
+            <path class="arc-bg" d="M 25 105 A 75 75 0 1 1 175 105" />
+            <path class="arc-fill" d="M 25 105 A 75 75 0 1 1 175 105"
+              stroke-dasharray="353" stroke-dashoffset="353" id="gauge2Fill" />
+          </svg>
+          <div class="arc-value-group">
+            <div class="arc-val" id="gauge2Val">--</div>
+            <div class="arc-label">Meter</div>
+          </div>
+        </div>
+        <div class="arc-gauge-subtitle">Example</div>
+      </div>
+    </div>
+
+    <!-- Gauge 3 -->
+    <div class="panel" data-build="5">
+      <div class="arc-gauge-card">
+        <div class="panel-label">Meter 3</div>
+        <div class="arc-gauge">
+          <svg viewBox="0 0 200 120">
+            <text class="arc-scale-label" x="18" y="112">0</text>
+            <text class="arc-scale-label" x="170" y="112">100</text>
+            <text class="arc-scale-label" x="170" y="65">90</text>
+            <text class="arc-scale-label" x="145" y="18">80</text>
+            <text class="arc-scale-label" x="55" y="18">70</text>
+            <path class="arc-bg" d="M 25 105 A 75 75 0 1 1 175 105" />
+            <path class="arc-fill" d="M 25 105 A 75 75 0 1 1 175 105"
+              stroke-dasharray="353" stroke-dashoffset="353" id="gauge3Fill" />
+            <path class="arc-warning" d="M 25 105 A 75 75 0 1 1 175 105"
+              stroke-dasharray="353" stroke-dashoffset="318" />
+          </svg>
+          <div class="arc-value-group">
+            <div class="arc-val" id="gauge3Val">--</div>
+            <div class="arc-label">Meter</div>
+          </div>
+        </div>
+        <div class="arc-gauge-subtitle">Example</div>
+      </div>
+    </div>
+
+    <!-- ═══ ROW 3: Controls ════════════════════════ -->
+
+    <!-- Control 1 -->
+    <div class="panel" data-build="6">
+      <div class="control-card">
+        <div class="panel-label">Meter 1 Range</div>
+        <div class="input-group">
+          <label for="min1">Min</label>
+          <input type="number" id="min1" placeholder="0" min="0" max="100" />
+        </div>
+        <div class="input-group">
+          <label for="max1">Max</label>
+          <input type="number" id="max1" placeholder="100" min="0" max="100" />
+        </div>
+        <div class="control-buttons">
+          <button class="btn btn-clear" data-target="1">Clear</button>
+          <button class="btn btn-submit" data-target="1">Submit</button>
+        </div>
+        <div class="toast" id="toast1"></div>
+      </div>
+    </div>
+
+    <!-- Control 2 -->
+    <div class="panel" data-build="7">
+      <div class="control-card">
+        <div class="panel-label">Meter 2 Range</div>
+        <div class="input-group">
+          <label for="min2">Min</label>
+          <input type="number" id="min2" placeholder="0" min="0" max="100" />
+        </div>
+        <div class="input-group">
+          <label for="max2">Max</label>
+          <input type="number" id="max2" placeholder="100" min="0" max="100" />
+        </div>
+        <div class="control-buttons">
+          <button class="btn btn-clear" data-target="2">Clear</button>
+          <button class="btn btn-submit" data-target="2">Submit</button>
+        </div>
+        <div class="toast" id="toast2"></div>
+      </div>
+    </div>
+
+    <!-- Control 3 -->
+    <div class="panel" data-build="8">
+      <div class="control-card">
+        <div class="panel-label">Meter 3 Range</div>
+        <div class="input-group">
+          <label for="min3">Min</label>
+          <input type="number" id="min3" placeholder="0" min="0" max="100" />
+        </div>
+        <div class="input-group">
+          <label for="max3">Max</label>
+          <input type="number" id="max3" placeholder="100" min="0" max="100" />
+        </div>
+        <div class="control-buttons">
+          <button class="btn btn-clear" data-target="3">Clear</button>
+          <button class="btn btn-submit" data-target="3">Submit</button>
+        </div>
+        <div class="toast" id="toast3"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════════
+       BUILD ANIMATION — waits for trigger
+       ═══════════════════════════════════════════════ */
+    const panels = document.querySelectorAll('.panel[data-build]');
+    const overlay = document.getElementById('buildOverlay');
+    const STAGGER = 350;
+    const START_DELAY = 400;
+    let buildStarted = false;
+
+    /* Gauge config (global) */
+    window.gaugeConfig = {
+      1: { min: 0, max: 100, center: 79, range: 10 },
+      2: { min: 0, max: 100, center: 43, range: 8 },
+      3: { min: 0, max: 100, center: 72, range: 10 }
+    };
+
+    function startBuild() {
+      if (buildStarted) return;
+      buildStarted = true;
+
+      overlay.classList.add('active');
+
+      panels.forEach((panel, i) => {
+        setTimeout(() => {
+          panel.classList.add('built');
+
+          if (i === panels.length - 1) {
+            setTimeout(() => {
+              overlay.classList.remove('active');
+              initGaugeValues();
+              /* Start live updates after build */
+              setInterval(updateGauges, 2000);
+            }, 700);
+          }
+        }, START_DELAY + i * STAGGER);
+      });
+    }
+
+    function initGaugeValues() {
+      document.getElementById('waterFill').style.height = '43%';
+      document.getElementById('waterVal').textContent = '43.1';
+
+      document.getElementById('speedFill').style.height = '72%';
+      document.getElementById('speedVal').textContent = '71.6';
+
+      document.getElementById('weightFill').style.height = '52%';
+      document.getElementById('weightVal').textContent = '52.0';
+
+      const ARC = 353;
+      document.getElementById('gauge1Fill').style.strokeDashoffset = ARC - (79 / 100) * ARC;
+      document.getElementById('gauge1Val').textContent = '79';
+
+      document.getElementById('gauge2Fill').style.strokeDashoffset = ARC - (43 / 100) * ARC;
+      document.getElementById('gauge2Val').textContent = '43';
+
+      document.getElementById('gauge3Fill').style.strokeDashoffset = ARC - (72 / 100) * ARC;
+      document.getElementById('gauge3Val').textContent = '72';
+    }
+
+    /* Listen for parent page to trigger build */
+    window.addEventListener('message', (e) => {
+      if (e.data === 'startBuild') startBuild();
+    });
+
+    /* If opened standalone (not in iframe), auto-start after short delay */
+    if (window.self === window.top) {
+      setTimeout(startBuild, 800);
+    }
+
+    /* ═══════════════════════════════════════════════
+       LIVE GAUGE UPDATES (after build)
+       ═══════════════════════════════════════════════ */
+    const ARC_LEN = 353;
+
+    function randomInRange(cfg) {
+      const lo = Math.max(cfg.min, cfg.center - cfg.range);
+      const hi = Math.min(cfg.max, cfg.center + cfg.range);
+      return lo + Math.random() * (hi - lo);
+    }
+
+    function updateGauges() {
+      const waterVal = 40 + Math.random() * 8;
+      const speedVal = 68 + Math.random() * 8;
+      const weightVal = 49 + Math.random() * 6;
+
+      document.getElementById('waterFill').style.height = waterVal + '%';
+      document.getElementById('waterVal').textContent = waterVal.toFixed(1);
+      document.getElementById('speedFill').style.height = speedVal + '%';
+      document.getElementById('speedVal').textContent = speedVal.toFixed(1);
+      document.getElementById('weightFill').style.height = weightVal + '%';
+      document.getElementById('weightVal').textContent = weightVal.toFixed(1);
+
+      for (let i = 1; i <= 3; i++) {
+        const cfg = gaugeConfig[i];
+        const val = randomInRange(cfg);
+        const clamped = Math.max(cfg.min, Math.min(cfg.max, val));
+        document.getElementById('gauge' + i + 'Fill').style.strokeDashoffset = ARC_LEN - (clamped / 100) * ARC_LEN;
+        document.getElementById('gauge' + i + 'Val').textContent = Math.round(clamped);
+      }
+    }
+
+    /* ── Submit / Clear buttons ───────────────────── */
+    document.querySelectorAll('.btn-submit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.target;
+        const minVal = document.getElementById('min' + t).value !== '' ? parseFloat(document.getElementById('min' + t).value) : 0;
+        const maxVal = document.getElementById('max' + t).value !== '' ? parseFloat(document.getElementById('max' + t).value) : 100;
+        if (minVal >= maxVal) { showToast(t, 'Min must be less than Max', true); return; }
+        gaugeConfig[t].min = Math.max(0, minVal);
+        gaugeConfig[t].max = Math.min(100, maxVal);
+        showToast(t, 'Range set: ' + minVal + ' \u2013 ' + maxVal);
+      });
+    });
+
+    document.querySelectorAll('.btn-clear').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.target;
+        document.getElementById('min' + t).value = '';
+        document.getElementById('max' + t).value = '';
+        gaugeConfig[t].min = 0;
+        gaugeConfig[t].max = 100;
+        showToast(t, 'Range reset to 0 \u2013 100');
+      });
+    });
+
+    function showToast(id, msg, isError) {
+      const toast = document.getElementById('toast' + id);
+      toast.textContent = msg;
+      toast.style.color = isError ? '#dc2626' : '#16a34a';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

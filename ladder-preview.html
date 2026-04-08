@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ladder Logic Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0c10;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 60px 24px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .ladder-logic-wrapper {
+      max-width: 780px;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .ladder-logic-wrapper.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .ladder-logic-container {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 24px 16px 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    }
+    .ladder-logic-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      padding-left: 4px;
+    }
+    .ladder-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* SVG animation groups start hidden */
+    .ladder-svg g[data-anim-order] {
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .ladder-svg g[data-anim-order].drawn {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="ladder-logic-wrapper" id="ladder-logic">
+    <div class="ladder-logic-container">
+      <div class="ladder-logic-title">Generated Ladder Logic &mdash; Rungs 14 &ndash; 15</div>
+      <svg class="ladder-svg" viewBox="0 0 760 310" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- ═══ Power Rails ═══ -->
+        <g data-anim-order="0">
+          <line x1="40" y1="10" x2="40" y2="300" stroke="#334155" stroke-width="3"/>
+          <line x1="720" y1="10" x2="720" y2="300" stroke="#334155" stroke-width="3"/>
+        </g>
+
+        <!-- ═══ RUNG 14 ═══ -->
+
+        <!-- Rung 14 label + wire segment 1 -->
+        <g data-anim-order="1">
+          <text x="14" y="90" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#94a3b8">14</text>
+          <line x1="40" y1="85" x2="130" y2="85" stroke="#475569" stroke-width="2"/>
+        </g>
+
+        <!-- XIC Contact: @PRX_2 (Rung 14) -->
+        <g data-anim-order="2">
+          <!-- Tag label -->
+          <text x="175" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#2563eb">@PRX_2</text>
+          <!-- Left bracket -->
+          <line x1="140" y1="69" x2="140" y2="101" stroke="#1e293b" stroke-width="2"/>
+          <line x1="140" y1="69" x2="150" y2="69" stroke="#1e293b" stroke-width="2"/>
+          <line x1="140" y1="101" x2="150" y2="101" stroke="#1e293b" stroke-width="2"/>
+          <!-- Right bracket -->
+          <line x1="210" y1="69" x2="210" y2="101" stroke="#1e293b" stroke-width="2"/>
+          <line x1="210" y1="69" x2="200" y2="69" stroke="#1e293b" stroke-width="2"/>
+          <line x1="210" y1="101" x2="200" y2="101" stroke="#1e293b" stroke-width="2"/>
+          <!-- Diagonal slash (XIC) -->
+          <line x1="152" y1="97" x2="198" y2="73" stroke="#1e293b" stroke-width="2"/>
+          <!-- XIC label -->
+          <text x="175" y="117" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">XIC</text>
+        </g>
+
+        <!-- Wire segment 2 (after PRX_2 contact) -->
+        <g data-anim-order="3">
+          <line x1="210" y1="85" x2="340" y2="85" stroke="#475569" stroke-width="2"/>
+        </g>
+
+        <!-- TON Timer Block -->
+        <g data-anim-order="4">
+          <!-- Outer box -->
+          <rect x="340" y="42" width="220" height="86" rx="4" ry="4" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+          <!-- Header background -->
+          <rect x="340" y="42" width="220" height="24" rx="4" ry="0" fill="#e2e8f0" stroke="none"/>
+          <rect x="340" y="58" width="220" height="8" fill="#e2e8f0" stroke="none"/>
+          <!-- Header text -->
+          <text x="450" y="60" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#1e293b">TON</text>
+          <!-- Header bottom line -->
+          <line x1="340" y1="66" x2="560" y2="66" stroke="#cbd5e1" stroke-width="1"/>
+          <!-- Timer name -->
+          <text x="352" y="84" font-family="JetBrains Mono, monospace" font-size="11" fill="#475569">Timer</text>
+          <text x="420" y="84" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#1e293b">T4:2</text>
+          <!-- Preset -->
+          <text x="352" y="101" font-family="JetBrains Mono, monospace" font-size="11" fill="#475569">Preset</text>
+          <text x="420" y="101" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#1e293b">3000</text>
+          <!-- Accum -->
+          <text x="352" y="118" font-family="JetBrains Mono, monospace" font-size="11" fill="#475569">Accum</text>
+          <text x="420" y="118" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#1e293b">0</text>
+          <!-- EN pin -->
+          <text x="348" y="60" font-family="JetBrains Mono, monospace" font-size="10" fill="#64748b">EN</text>
+          <!-- DN pin -->
+          <text x="537" y="60" font-family="JetBrains Mono, monospace" font-size="10" fill="#64748b">DN</text>
+          <!-- Vertical separator -->
+          <line x1="500" y1="66" x2="500" y2="128" stroke="#cbd5e1" stroke-width="1"/>
+          <!-- EN indicator -->
+          <circle cx="520" cy="82" r="5" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+          <text x="533" y="86" font-family="JetBrains Mono, monospace" font-size="10" fill="#94a3b8">EN</text>
+          <!-- DN indicator -->
+          <circle cx="520" cy="104" r="5" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="533" y="108" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#2563eb">DN</text>
+        </g>
+
+        <!-- Wire segment 3 (after timer to right rail) -->
+        <g data-anim-order="5">
+          <line x1="560" y1="85" x2="720" y2="85" stroke="#475569" stroke-width="2"/>
+        </g>
+
+
+        <!-- ═══ RUNG 15 ═══ -->
+
+        <!-- Rung 15 label + wire segment 1 -->
+        <g data-anim-order="6">
+          <text x="14" y="230" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#94a3b8">15</text>
+          <line x1="40" y1="225" x2="130" y2="225" stroke="#475569" stroke-width="2"/>
+        </g>
+
+        <!-- XIC Contact: @PRX_2 (Rung 15) -->
+        <g data-anim-order="7">
+          <text x="175" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#2563eb">@PRX_2</text>
+          <line x1="140" y1="209" x2="140" y2="241" stroke="#1e293b" stroke-width="2"/>
+          <line x1="140" y1="209" x2="150" y2="209" stroke="#1e293b" stroke-width="2"/>
+          <line x1="140" y1="241" x2="150" y2="241" stroke="#1e293b" stroke-width="2"/>
+          <line x1="210" y1="209" x2="210" y2="241" stroke="#1e293b" stroke-width="2"/>
+          <line x1="210" y1="209" x2="200" y2="209" stroke="#1e293b" stroke-width="2"/>
+          <line x1="210" y1="241" x2="200" y2="241" stroke="#1e293b" stroke-width="2"/>
+          <line x1="152" y1="237" x2="198" y2="213" stroke="#1e293b" stroke-width="2"/>
+          <text x="175" y="257" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">XIC</text>
+        </g>
+
+        <!-- Wire segment 2 -->
+        <g data-anim-order="8">
+          <line x1="210" y1="225" x2="310" y2="225" stroke="#475569" stroke-width="2"/>
+        </g>
+
+        <!-- XIC Contact: T4:2.DN -->
+        <g data-anim-order="9">
+          <text x="360" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#2563eb">T4:2.DN</text>
+          <line x1="320" y1="209" x2="320" y2="241" stroke="#1e293b" stroke-width="2"/>
+          <line x1="320" y1="209" x2="330" y2="209" stroke="#1e293b" stroke-width="2"/>
+          <line x1="320" y1="241" x2="330" y2="241" stroke="#1e293b" stroke-width="2"/>
+          <line x1="400" y1="209" x2="400" y2="241" stroke="#1e293b" stroke-width="2"/>
+          <line x1="400" y1="209" x2="390" y2="209" stroke="#1e293b" stroke-width="2"/>
+          <line x1="400" y1="241" x2="390" y2="241" stroke="#1e293b" stroke-width="2"/>
+          <line x1="332" y1="237" x2="388" y2="213" stroke="#1e293b" stroke-width="2"/>
+          <text x="360" y="257" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">XIC</text>
+        </g>
+
+        <!-- Wire segment 3 -->
+        <g data-anim-order="10">
+          <line x1="400" y1="225" x2="540" y2="225" stroke="#475569" stroke-width="2"/>
+        </g>
+
+        <!-- OTE Coil: @Valve_2 -->
+        <g data-anim-order="11">
+          <text x="580" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#2563eb">@Valve_2</text>
+          <!-- Left paren -->
+          <path d="M 556 209 C 540 217, 540 233, 556 241" fill="none" stroke="#1e293b" stroke-width="2"/>
+          <!-- Right paren -->
+          <path d="M 604 209 C 620 217, 620 233, 604 241" fill="none" stroke="#1e293b" stroke-width="2"/>
+          <text x="580" y="257" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">OTE</text>
+        </g>
+
+        <!-- Wire segment 4 (after coil to right rail) -->
+        <g data-anim-order="12">
+          <line x1="604" y1="225" x2="720" y2="225" stroke="#475569" stroke-width="2"/>
+        </g>
+
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    function triggerLadderAnimation() {
+      const wrapper = document.getElementById('ladder-logic');
+      if (!wrapper) return;
+
+      // 1. Fade in the white container
+      wrapper.classList.add('visible');
+
+      // 2. Stagger-draw each SVG group
+      const groups = wrapper.querySelectorAll('svg g[data-anim-order]');
+      const sorted = Array.from(groups).sort((a, b) =>
+        parseInt(a.dataset.animOrder) - parseInt(b.dataset.animOrder)
+      );
+
+      sorted.forEach((g, i) => {
+        setTimeout(() => {
+          g.classList.add('drawn');
+        }, 300 + i * 150);
+      });
+    }
+
+    // Auto-trigger after 800ms for standalone preview
+    setTimeout(triggerLadderAnimation, 800);
+  </script>
+</body>
+</html>

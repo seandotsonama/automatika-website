@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automatika — AI-Powered PLC Programming</title>
+  <link rel="icon" href="https://automatika.us/wp-content/uploads/2023/02/cropped-automatika_logo-150x150.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ───────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0c10;
+      color: #e4e4e7;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Utility ────────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+    /* ── Background Glow ───────────────────────────── */
+    .bg-glow {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(56,189,248,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 20%, rgba(139,92,246,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 50% 80%, rgba(16,185,129,0.05) 0%, transparent 70%);
+    }
+
+    /* ── Nav ────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(10,12,16,0.75);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    nav .container {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { height: 32px; width: auto; }
+    .nav-logo span { font-weight: 700; font-size: 1.15rem; color: #f4f4f5; letter-spacing: -0.02em; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: #a1a1aa; font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #f4f4f5; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 10px; font-size: 0.875rem; font-weight: 600;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: #fff; text-decoration: none; border: none; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px rgba(99,102,241,0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(99,102,241,0.4);
+    }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 10px; font-size: 0.875rem; font-weight: 600;
+      background: rgba(255,255,255,0.06); color: #e4e4e7;
+      text-decoration: none; border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    /* ── Hero ───────────────────────────────────────── */
+    .hero {
+      position: relative; z-index: 1;
+      padding: 160px 0 100px; text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 100px;
+      background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.25);
+      font-size: 0.8rem; font-weight: 600; color: #a78bfa;
+      margin-bottom: 28px;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #a78bfa; animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.2rem);
+      font-weight: 900; line-height: 1.08;
+      letter-spacing: -0.035em; color: #f4f4f5;
+      max-width: 860px; margin: 0 auto 24px;
+    }
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.2rem; color: #a1a1aa; max-width: 640px;
+      margin: 0 auto 40px; line-height: 1.7;
+    }
+    .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── macOS Window ───────────────────────────────── */
+    .macos-window {
+      background: rgba(20,22,30,0.85);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      box-shadow:
+        0 25px 60px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.05) inset;
+    }
+    .macos-titlebar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .macos-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .macos-dot.red { background: #ff5f57; }
+    .macos-dot.yellow { background: #febc2e; }
+    .macos-dot.green { background: #28c840; }
+    .macos-title {
+      flex: 1; text-align: center; font-size: 0.8rem;
+      color: #71717a; font-weight: 500;
+      margin-right: 44px; /* offset for dots */
+    }
+    .macos-body { padding: 24px; text-align: left; }
+
+    /* ── Hero Terminal ──────────────────────────────── */
+    .hero-terminal {
+      max-width: 780px; margin: 60px auto 0; text-align: left;
+    }
+    .terminal-line {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; line-height: 1.7;
+      margin-bottom: 8px;
+    }
+    /* Typewriter animation */
+    .typewriter-line { opacity: 0; }
+    .typewriter-line.typed { opacity: 1; }
+    .typewriter-line .terminal-cmd,
+    .typewriter-line .terminal-output { visibility: hidden; }
+    .typewriter-line.typing .terminal-cmd,
+    .typewriter-line.typing .terminal-output { visibility: visible; }
+    .typewriter-line.typed .terminal-cmd,
+    .typewriter-line.typed .terminal-output { visibility: visible; }
+    .type-cursor {
+      display: inline-block; width: 8px; height: 18px;
+      background: #818cf8; border-radius: 1px;
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom; margin-left: 1px;
+    }
+    .terminal-prompt { color: #22d3ee; user-select: none; flex-shrink: 0; }
+    .terminal-cmd { color: #e4e4e7; flex: 1; min-width: 0; overflow-wrap: break-word; word-wrap: break-word; }
+    .terminal-comment { color: #52525b; }
+    .terminal-output { color: #4ade80; flex: 1; min-width: 0; overflow-wrap: break-word; word-wrap: break-word; }
+    .terminal-tag { color: #a78bfa; }
+    .terminal-cursor {
+      display: inline-block; width: 8px; height: 18px;
+      background: #818cf8; border-radius: 1px;
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom; margin-left: 2px;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* ── Brands Bar ────────────────────────────────── */
+    .brands {
+      position: relative; z-index: 1;
+      padding: 60px 0 40px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .brands p {
+      font-size: 0.8rem; text-transform: uppercase;
+      letter-spacing: 0.12em; color: #52525b; font-weight: 600;
+      margin-bottom: 32px;
+    }
+    .brand-logos {
+      display: flex; justify-content: center; align-items: center;
+      gap: 48px; flex-wrap: wrap; opacity: 0.45;
+    }
+    .brand-logos span {
+      font-size: 1.1rem; font-weight: 700; letter-spacing: 0.03em;
+      color: #a1a1aa;
+    }
+
+    /* ── Section Headers ───────────────────────────── */
+    .section-header {
+      text-align: center; max-width: 700px;
+      margin: 0 auto 64px;
+    }
+    .section-header .tag {
+      display: inline-block; font-size: 0.75rem;
+      font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: #818cf8;
+      margin-bottom: 16px;
+    }
+    .section-header h2 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      color: #f4f4f5; margin-bottom: 16px; line-height: 1.15;
+    }
+    .section-header p { font-size: 1.05rem; color: #a1a1aa; line-height: 1.7; }
+
+    /* ── Features ───────────────────────────────────── */
+    .features {
+      position: relative; z-index: 1;
+      padding: 100px 0;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 32px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .feature-card:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.1);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 20px;
+      background: var(--icon-bg); color: var(--accent);
+    }
+    .feature-card h3 {
+      font-size: 1.15rem; font-weight: 700; color: #f4f4f5;
+      margin-bottom: 10px; letter-spacing: -0.01em;
+    }
+    .feature-card p {
+      font-size: 0.925rem; color: #a1a1aa; line-height: 1.65;
+    }
+    .feature-card code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; padding: 2px 7px;
+      background: rgba(139,92,246,0.12);
+      border-radius: 4px; color: #c4b5fd;
+    }
+
+    /* ── How It Works ──────────────────────────────── */
+    .how-it-works {
+      position: relative; z-index: 1;
+      padding: 100px 0;
+    }
+    .steps {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 32px; position: relative;
+    }
+    .steps::before {
+      content: ''; position: absolute;
+      top: 44px; left: 16.66%; right: 16.66%;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(129,140,248,0.3), rgba(192,132,252,0.3));
+    }
+    .step { text-align: center; position: relative; }
+    .step-num {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.2rem; margin: 0 auto 24px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2));
+      border: 1px solid rgba(139,92,246,0.3); color: #c4b5fd;
+      position: relative; z-index: 1;
+    }
+    .step h3 {
+      font-size: 1.1rem; font-weight: 700; color: #f4f4f5;
+      margin-bottom: 8px;
+    }
+    .step p { font-size: 0.9rem; color: #a1a1aa; max-width: 280px; margin: 0 auto; }
+
+    /* ── Demo Window ───────────────────────────────── */
+    .demo-section {
+      position: relative; z-index: 1;
+      padding: 60px 0 100px;
+    }
+    .demo-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 40px; align-items: center;
+    }
+    .demo-text h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      color: #f4f4f5; margin-bottom: 16px; line-height: 1.15;
+    }
+    .demo-text p {
+      font-size: 1.05rem; color: #a1a1aa; line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .chat-bubble {
+      display: flex; gap: 12px; margin-bottom: 16px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      line-height: 1.6; text-align: left;
+    }
+    .chat-avatar {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.75rem; font-weight: 700;
+      margin-top: 2px;
+    }
+    .chat-avatar.user { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .chat-avatar.ai { background: rgba(139,92,246,0.2); color: #a78bfa; }
+    .chat-msg { color: #d4d4d8; }
+    .chat-msg .tag { color: #22d3ee; }
+
+    /* ── CTA Section ───────────────────────────────── */
+    .cta-section {
+      position: relative; z-index: 1;
+      padding: 100px 0; text-align: center;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08));
+      border: 1px solid rgba(139,92,246,0.15);
+      border-radius: 24px; padding: 80px 40px;
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: ''; position: absolute;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(139,92,246,0.06) 0%, transparent 60%);
+    }
+    .cta-box h2 {
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      font-weight: 800; color: #f4f4f5; margin-bottom: 16px;
+      letter-spacing: -0.03em; position: relative;
+    }
+    .cta-box p {
+      font-size: 1.1rem; color: #a1a1aa; max-width: 520px;
+      margin: 0 auto 36px; position: relative;
+    }
+    .cta-box .btn-primary { font-size: 1rem; padding: 14px 32px; position: relative; }
+
+    /* ── Footer ─────────────────────────────────────── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 48px 0;
+    }
+    .footer-inner {
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 10px; }
+    .footer-brand img { height: 28px; }
+    .footer-brand span { font-weight: 600; color: #71717a; font-size: 0.9rem; }
+    footer p { color: #52525b; font-size: 0.8rem; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: #71717a; font-size: 0.85rem; text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: #e4e4e7; }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero { padding: 120px 0 60px; }
+      .steps { grid-template-columns: 1fr; gap: 40px; }
+      .steps::before { display: none; }
+      .demo-layout { grid-template-columns: 1fr; }
+      .brand-logos { gap: 28px; }
+      .cta-box { padding: 48px 24px; }
+      .ladder-logic-wrapper { margin: 24px 16px 0; }
+    }
+
+    /* ── HMI Typewriter Lines ──────────────────────── */
+    .typewriter-line-hmi { opacity: 0; }
+    .typewriter-line-hmi.typed { opacity: 1; }
+    .typewriter-line-hmi .terminal-cmd,
+    .typewriter-line-hmi .terminal-output { visibility: hidden; }
+    .typewriter-line-hmi.typing .terminal-cmd,
+    .typewriter-line-hmi.typing .terminal-output { visibility: visible; }
+    .typewriter-line-hmi.typed .terminal-cmd,
+    .typewriter-line-hmi.typed .terminal-output { visibility: visible; }
+
+    /* ── HMI Demo Section ──────────────────────────── */
+    .hmi-demo-section {
+      position: relative; z-index: 1;
+      padding: 100px 0 60px;
+    }
+    .hmi-demo-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    .hmi-demo-top {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 40px; align-items: center;
+    }
+    .hmi-demo-text h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      color: #f4f4f5; margin-bottom: 16px; line-height: 1.15;
+    }
+    .hmi-demo-text p {
+      font-size: 1.05rem; color: #a1a1aa; line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .hmi-terminal {
+      text-align: left;
+    }
+    .hmi-iframe-wrapper {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 25px 60px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .hmi-iframe-wrapper iframe {
+      display: block;
+      width: 100%;
+      height: 850px;
+      border: none;
+      border-radius: 0 0 16px 16px;
+    }
+    .hmi-iframe-titlebar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 18px;
+      background: rgba(20,22,30,0.95);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .hmi-iframe-title {
+      flex: 1; text-align: center; font-size: 0.8rem;
+      color: #71717a; font-weight: 500;
+      margin-right: 44px;
+    }
+    @media (max-width: 768px) {
+      .hmi-demo-top { grid-template-columns: 1fr; }
+      .hmi-iframe-wrapper iframe { height: 600px; }
+    }
+
+    /* ── Ladder Logic Diagram ────────────────────── */
+    .ladder-logic-wrapper {
+      max-width: 780px; margin: 32px auto 0;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .ladder-logic-wrapper.visible { opacity: 1; transform: translateY(0); }
+    .ladder-logic-container {
+      background: #f8fafc; border: 1px solid #cbd5e1;
+      border-radius: 12px; padding: 24px 16px 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    }
+    .ladder-logic-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      font-weight: 600; color: #64748b; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 16px; padding-left: 4px;
+    }
+    .ladder-svg { width: 100%; height: auto; display: block; }
+    .ladder-svg g[data-anim-order] { opacity: 0; transition: opacity 0.4s ease; }
+    .ladder-svg g[data-anim-order].drawn { opacity: 1; }
+
+    /* ── Animations ─────────────────────────────────── */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- ── Navigation ──────────────────────────────── -->
+  <nav>
+    <div class="container">
+      <a href="#" class="nav-logo">
+        <img src="https://automatika.us/wp-content/uploads/2023/02/cropped-automatika_logo.png" alt="Automatika logo" />
+        <span>Automatika</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#demo">Demo</a>
+        <a href="#cta" class="btn-primary">Join the Waitlist</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        AI-Powered PLC Programming
+      </div>
+      <h1>
+        Write, Debug &amp; Deploy PLC Code<br />
+        <span class="gradient-text">Using Plain English</span>
+      </h1>
+      <p>
+        Automatika sits above your PLC programming environment. Generate ladder logic,
+        troubleshoot faults, and translate programs across platforms &mdash; no deep
+        PLC expertise required.
+      </p>
+      <div class="hero-ctas">
+        <a href="#cta" class="btn-primary">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Join the Waitlist
+        </a>
+        <a href="#features" class="btn-secondary">
+          See Features
+        </a>
+      </div>
+
+      <!-- Hero macOS Terminal -->
+      <div class="hero-terminal macos-window fade-up">
+        <div class="macos-titlebar">
+          <div class="macos-dot red"></div>
+          <div class="macos-dot yellow"></div>
+          <div class="macos-dot green"></div>
+          <div class="macos-title">Automatika — Conversational PLC Programming</div>
+        </div>
+        <div class="macos-body" id="hero-terminal-body">
+          <div class="terminal-line typewriter-line" data-type="cmd">
+            <div class="chat-avatar user">U</div>
+            <span class="terminal-cmd">I want to add a proximity sensor <span class="terminal-tag">@PRX_2</span> so that when it's blocked for more than 3 seconds, <span class="terminal-tag">@Valve_2</span> opens.</span>
+          </div>
+          <div class="terminal-line typewriter-line" style="margin-top: 12px;" data-type="output">
+            <div class="chat-avatar ai">A</div>
+            <span class="terminal-output">Done. I've added a TON timer (T4:2, 3s preset) tied to <span class="terminal-tag">@PRX_2</span>. When the timer completes, <span class="terminal-tag">@Valve_2</span> energizes. Updated Rung 14. Ready to export to Studio 5000.</span>
+          </div>
+          <div class="terminal-line typewriter-line" style="margin-top: 12px;" data-type="cmd">
+            <div class="chat-avatar user">U</div>
+            <span class="terminal-cmd">Simulate it.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ladder Logic Diagram (appears after typewriter finishes) -->
+      <div class="ladder-logic-wrapper" id="ladder-logic">
+        <div class="ladder-logic-container">
+          <div class="ladder-logic-title">Generated Ladder Logic &mdash; Rungs 14 &ndash; 15</div>
+          <svg class="ladder-svg" viewBox="0 0 760 310" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- Power Rails -->
+            <g data-anim-order="0">
+              <line x1="40" y1="10" x2="40" y2="300" stroke="#334155" stroke-width="3"/>
+              <line x1="720" y1="10" x2="720" y2="300" stroke="#334155" stroke-width="3"/>
+            </g>
+
+            <!-- RUNG 14: label + wire segment 1 -->
+            <g data-anim-order="1">
+              <text x="14" y="90" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#94a3b8">14</text>
+              <line x1="40" y1="85" x2="130" y2="85" stroke="#475569" stroke-width="2"/>
+            </g>
+
+            <!-- XIC Contact: @PRX_2 (Rung 14) -->
+            <g data-anim-order="2">
+              <text x="175" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#2563eb">@PRX_2</text>
+              <line x1="140" y1="69" x2="140" y2="101" stroke="#1e293b" stroke-width="2"/>
+              <line x1="140" y1="69" x2="150" y2="69" stroke="#1e293b" stroke-width="2"/>
+              <line x1="140" y1="101" x2="150" y2="101" stroke="#1e293b" stroke-width="2"/>
+              <line x1="210" y1="69" x2="210" y2="101" stroke="#1e293b" stroke-width="2"/>
+              <line x1="210" y1="69" x2="200" y2="69" stroke="#1e293b" stroke-width="2"/>
+              <line x1="210" y1="101" x2="200" y2="101" stroke="#1e293b" stroke-width="2"/>
+              <line x1="152" y1="97" x2="198" y2="73" stroke="#1e293b" stroke-width="2"/>
+              <text x="175" y="117" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">XIC</text>
+            </g>
+
+            <!-- Wire segment 2 -->
+            <g data-anim-order="3">
+              <line x1="210" y1="85" x2="340" y2="85" stroke="#475569" stroke-width="2"/>
+            </g>
+
+            <!-- TON Timer Block -->
+            <g data-anim-order="4">
+              <rect x="340" y="42" width="220" height="86" rx="4" ry="4" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+              <rect x="340" y="42" width="220" height="24" rx="4" ry="0" fill="#e2e8f0" stroke="none"/>
+              <rect x="340" y="58" width="220" height="8" fill="#e2e8f0" stroke="none"/>
+              <text x="450" y="60" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#1e293b">TON</text>
+              <line x1="340" y1="66" x2="560" y2="66" stroke="#cbd5e1" stroke-width="1"/>
+              <text x="352" y="84" font-family="JetBrains Mono, monospace" font-size="11" fill="#475569">Timer</text>
+              <text x="420" y="84" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#1e293b">T4:2</text>
+              <text x="352" y="101" font-family="JetBrains Mono, monospace" font-size="11" fill="#475569">Preset</text>
+              <text x="420" y="101" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#1e293b">3000</text>
+              <text x="352" y="118" font-family="JetBrains Mono, monospace" font-size="11" fill="#475569">Accum</text>
+              <text x="420" y="118" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#1e293b">0</text>
+              <text x="348" y="60" font-family="JetBrains Mono, monospace" font-size="10" fill="#64748b">EN</text>
+              <text x="537" y="60" font-family="JetBrains Mono, monospace" font-size="10" fill="#64748b">DN</text>
+              <line x1="500" y1="66" x2="500" y2="128" stroke="#cbd5e1" stroke-width="1"/>
+              <circle cx="520" cy="82" r="5" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+              <text x="533" y="86" font-family="JetBrains Mono, monospace" font-size="10" fill="#94a3b8">EN</text>
+              <circle cx="520" cy="104" r="5" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+              <text x="533" y="108" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#2563eb">DN</text>
+            </g>
+
+            <!-- Wire segment 3 (to right rail) -->
+            <g data-anim-order="5">
+              <line x1="560" y1="85" x2="720" y2="85" stroke="#475569" stroke-width="2"/>
+            </g>
+
+            <!-- RUNG 15: label + wire segment 1 -->
+            <g data-anim-order="6">
+              <text x="14" y="230" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#94a3b8">15</text>
+              <line x1="40" y1="225" x2="130" y2="225" stroke="#475569" stroke-width="2"/>
+            </g>
+
+            <!-- XIC Contact: @PRX_2 (Rung 15) -->
+            <g data-anim-order="7">
+              <text x="175" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#2563eb">@PRX_2</text>
+              <line x1="140" y1="209" x2="140" y2="241" stroke="#1e293b" stroke-width="2"/>
+              <line x1="140" y1="209" x2="150" y2="209" stroke="#1e293b" stroke-width="2"/>
+              <line x1="140" y1="241" x2="150" y2="241" stroke="#1e293b" stroke-width="2"/>
+              <line x1="210" y1="209" x2="210" y2="241" stroke="#1e293b" stroke-width="2"/>
+              <line x1="210" y1="209" x2="200" y2="209" stroke="#1e293b" stroke-width="2"/>
+              <line x1="210" y1="241" x2="200" y2="241" stroke="#1e293b" stroke-width="2"/>
+              <line x1="152" y1="237" x2="198" y2="213" stroke="#1e293b" stroke-width="2"/>
+              <text x="175" y="257" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">XIC</text>
+            </g>
+
+            <!-- Wire segment 2 -->
+            <g data-anim-order="8">
+              <line x1="210" y1="225" x2="310" y2="225" stroke="#475569" stroke-width="2"/>
+            </g>
+
+            <!-- XIC Contact: T4:2.DN -->
+            <g data-anim-order="9">
+              <text x="360" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#2563eb">T4:2.DN</text>
+              <line x1="320" y1="209" x2="320" y2="241" stroke="#1e293b" stroke-width="2"/>
+              <line x1="320" y1="209" x2="330" y2="209" stroke="#1e293b" stroke-width="2"/>
+              <line x1="320" y1="241" x2="330" y2="241" stroke="#1e293b" stroke-width="2"/>
+              <line x1="400" y1="209" x2="400" y2="241" stroke="#1e293b" stroke-width="2"/>
+              <line x1="400" y1="209" x2="390" y2="209" stroke="#1e293b" stroke-width="2"/>
+              <line x1="400" y1="241" x2="390" y2="241" stroke="#1e293b" stroke-width="2"/>
+              <line x1="332" y1="237" x2="388" y2="213" stroke="#1e293b" stroke-width="2"/>
+              <text x="360" y="257" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">XIC</text>
+            </g>
+
+            <!-- Wire segment 3 -->
+            <g data-anim-order="10">
+              <line x1="400" y1="225" x2="540" y2="225" stroke="#475569" stroke-width="2"/>
+            </g>
+
+            <!-- OTE Coil: @Valve_2 -->
+            <g data-anim-order="11">
+              <text x="580" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#2563eb">@Valve_2</text>
+              <path d="M 556 209 C 540 217, 540 233, 556 241" fill="none" stroke="#1e293b" stroke-width="2"/>
+              <path d="M 604 209 C 620 217, 620 233, 604 241" fill="none" stroke="#1e293b" stroke-width="2"/>
+              <text x="580" y="257" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">OTE</text>
+            </g>
+
+            <!-- Wire segment 4 (to right rail) -->
+            <g data-anim-order="12">
+              <line x1="604" y1="225" x2="720" y2="225" stroke="#475569" stroke-width="2"/>
+            </g>
+
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Brands Bar ──────────────────────────────── -->
+  <section class="brands fade-up">
+    <div class="container">
+      <p>Works with the platforms you already use</p>
+      <div class="brand-logos">
+        <span>Rockwell / Studio 5000</span>
+        <span>Siemens / TIA Portal</span>
+        <span>CODESYS</span>
+        <span>Beckhoff / TwinCAT</span>
+        <span>Mitsubishi</span>
+        <span>Omron</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ────────────────────────────────── -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header fade-up">
+        <span class="tag">Features</span>
+        <h2>The IDE That Speaks Your Language,<br />Not Just Ladder Logic</h2>
+        <p>Automatika bridges the gap between what you need your machine to do and the PLC code that makes it happen. Describe it. Deploy it.</p>
+      </div>
+
+      <div class="feature-grid">
+        <!-- Card 1 -->
+        <div class="feature-card fade-up" style="--accent: #38bdf8; --icon-bg: rgba(56,189,248,0.1);">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/><path d="M7 12h2l2-4 2 8 2-4h2"/></svg>
+          </div>
+          <h3>Cross-Platform Translation</h3>
+          <p>Import ladder logic from one PLC brand and export it to another. Translate between Rockwell, Siemens, CODESYS, Beckhoff, and more &mdash; Automatika handles the conversion so you don't have to rewrite from scratch.</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="feature-card fade-up" style="--accent: #a78bfa; --icon-bg: rgba(167,139,250,0.1);">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <h3>Natural Language Debugging</h3>
+          <p>Stop hunting through hundreds of rungs. Just ask: <code>"Why is @Motor1_1 not turning on when @PRX_1 activates?"</code> Automatika traces the logic path and explains the fault in plain English.</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="feature-card fade-up" style="--accent: #4ade80; --icon-bg: rgba(74,222,128,0.1);">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <h3>Modify Code Conversationally</h3>
+          <p>Add functionality without understanding every rung. Tell Automatika: <code>"Add @PRX_2 so when blocked for 3 seconds, @Valve_2 opens."</code> It handles the timer logic, memory bits, and rung placement for you.</p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="feature-card fade-up" style="--accent: #f472b6; --icon-bg: rgba(244,114,182,0.1);">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h3>Write Entire Programs</h3>
+          <p>Describe the full machine behavior and Automatika generates production-ready ladder logic. Design robot handshakes, conveyor sequences, HMI interlocks &mdash; all from a natural language conversation.</p>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="feature-card fade-up" style="--accent: #22d3ee; --icon-bg: rgba(34,211,238,0.1);">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h3>Built-In Simulation</h3>
+          <p>Test your program inside Automatika before it ever touches a PLC. Simulate I/O states, step through logic, and validate behavior &mdash; so you catch errors at your desk, not on the plant floor.</p>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="feature-card fade-up" style="--accent: #fb923c; --icon-bg: rgba(251,146,60,0.1);">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+          </div>
+          <h3>Tag &amp; Variable Management</h3>
+          <p>Create and manage I/O tag names, memory variables, timers, and counters all within the software. Automatika keeps your tag database organized and consistent across every rung.</p>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="feature-card fade-up" style="--accent: #e879f9; --icon-bg: rgba(232,121,249,0.1);">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3>Code Optimization</h3>
+          <p>Let Automatika analyze your program for redundancies, trapped loops, and inefficiencies. It simplifies and streamlines your logic so the final code is clean, readable, and performs at its best.</p>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="feature-card fade-up" style="--accent: #34d399; --icon-bg: rgba(52,211,153,0.1);">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 01-9 9"/></svg>
+          </div>
+          <h3>Version Control &amp; Collaboration</h3>
+          <p>Built-in versioning designed for ladder logic. Branch, merge, and review PLC programs with full diff views. Multiple engineers can collaborate on the same project &mdash; no more emailing .ACD files back and forth.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ────────────────────────────── -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header fade-up">
+        <span class="tag">How It Works</span>
+        <h2>From Idea to PLC Upload in Minutes</h2>
+        <p>Automatika sits between you and your PLC programming software. Import, modify, and export &mdash; all without leaving the conversation.</p>
+      </div>
+      <div class="steps fade-up">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Import or Describe</h3>
+          <p>Upload an existing PLC project or describe the automation behavior you need in plain language.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Generate &amp; Refine</h3>
+          <p>Automatika writes the ladder logic, then iterate conversationally &mdash; debug, modify, and simulate until it's right.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Export &amp; Deploy</h3>
+          <p>Download in your PLC platform's native format. Open in Studio 5000, TIA Portal, or others and upload to your hardware.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Demo Section ────────────────────────────── -->
+  <section class="demo-section" id="demo">
+    <div class="container">
+      <div class="demo-layout">
+        <div class="demo-text fade-up">
+          <h2>Program a Robot Handshake &mdash; Without Writing a Single Rung</h2>
+          <p>Describe complex multi-step sequences in natural language. Automatika generates the interlocks, timers, and fault handling automatically.</p>
+          <a href="#cta" class="btn-primary">
+            Get Early Access
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="macos-window fade-up">
+          <div class="macos-titlebar">
+            <div class="macos-dot red"></div>
+            <div class="macos-dot yellow"></div>
+            <div class="macos-dot green"></div>
+            <div class="macos-title">Automatika Chat</div>
+          </div>
+          <div class="macos-body">
+            <div class="chat-bubble">
+              <div class="chat-avatar user">U</div>
+              <div class="chat-msg">Help me design a handshake between my robot and PLC. When a box enters the loading zone and blocks <span class="tag">@PRX_4</span>, the robot should start the "Pick &amp; Place" subroutine. Once done, it reports back and waits for the next box.</div>
+            </div>
+            <div class="chat-bubble">
+              <div class="chat-avatar ai">A</div>
+              <div class="chat-msg">
+                I've generated a 4-step handshake sequence:<br /><br />
+                <span style="color:#4ade80;">&#10003;</span> Rung 20 &mdash; <span class="tag">@PRX_4</span> triggers Robot_Start bit<br />
+                <span style="color:#4ade80;">&#10003;</span> Rung 21 &mdash; Robot_Busy interlock prevents new cycle<br />
+                <span style="color:#4ade80;">&#10003;</span> Rung 22 &mdash; Robot_Complete resets sequence<br />
+                <span style="color:#4ade80;">&#10003;</span> Rung 23 &mdash; Fault timer (T4:5, 10s) if no response<br /><br />
+                Ready to simulate or export to Studio 5000.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HMI Demo Section ──────────────────────────── -->
+  <section class="hmi-demo-section" id="hmi-demo">
+    <div class="container">
+      <div class="hmi-demo-layout">
+        <!-- Top: Text + Terminal -->
+        <div class="hmi-demo-top">
+          <div class="hmi-demo-text fade-up">
+            <h2>Design HMI Screens &mdash; Just Describe What You Need</h2>
+            <p>Build complete operator interfaces from plain English. Automatika generates gauges, controls, and layouts in seconds &mdash; no drag-and-drop designer required.</p>
+            <a href="#cta" class="btn-primary">
+              Get Early Access
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+          <div class="hmi-terminal macos-window fade-up">
+            <div class="macos-titlebar">
+              <div class="macos-dot red"></div>
+              <div class="macos-dot yellow"></div>
+              <div class="macos-dot green"></div>
+              <div class="macos-title">Automatika &mdash; HMI Builder</div>
+            </div>
+            <div class="macos-body" id="hmi-terminal-body">
+              <div class="terminal-line typewriter-line-hmi" data-type="cmd">
+                <div class="chat-avatar user">U</div>
+                <span class="terminal-cmd">Create a 3 x 3 grid of linear gauges, rotational gauges and min / max values for each of the 3 pumps.</span>
+              </div>
+              <div class="terminal-line typewriter-line-hmi" style="margin-top: 12px;" data-type="output">
+                <div class="chat-avatar ai">A</div>
+                <span class="terminal-output">Working on creating HMI setup<span class="terminal-dots">........</span> <span style="color:#4ade80;">&#10003; complete</span>. Your dashboard is ready below with Water, Speed &amp; Weight bar gauges, 3 arc meters, and per-pump min/max controls.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom: Embedded HMI iframe -->
+        <div class="hmi-iframe-wrapper fade-up">
+          <div class="hmi-iframe-titlebar">
+            <div class="macos-dot red"></div>
+            <div class="macos-dot yellow"></div>
+            <div class="macos-dot green"></div>
+            <div class="hmi-iframe-title">Automatika &mdash; Generated HMI Dashboard</div>
+          </div>
+          <iframe src="hmi.html" title="Automatika HMI Dashboard" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA Section ─────────────────────────────── -->
+  <section class="cta-section" id="cta">
+    <div class="container">
+      <div class="cta-box fade-up">
+        <h2>Ready to Rethink PLC Programming?</h2>
+        <p>Join the waitlist for early access. Be among the first to write, debug, and deploy PLC code using natural language.</p>
+        <a href="https://automatika.us" class="btn-primary" target="_blank" rel="noopener">
+          Join the Waitlist
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ──────────────────────────────────── -->
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="https://automatika.us/wp-content/uploads/2023/02/cropped-automatika_logo.png" alt="Automatika" />
+        <span>&copy; 2026 Automatika</span>
+      </div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="https://automatika.us" target="_blank" rel="noopener">About</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── Scroll Animations & Typewriter ────────────── -->
+  <script>
+    /* Fade-up on scroll */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    /* ── Ladder Logic Animation (triggered after typewriter) ── */
+    function triggerLadderAnimation() {
+      const wrapper = document.getElementById('ladder-logic');
+      if (!wrapper) return;
+
+      setTimeout(() => {
+        wrapper.classList.add('visible');
+
+        const groups = wrapper.querySelectorAll('svg g[data-anim-order]');
+        const sorted = Array.from(groups).sort((a, b) =>
+          parseInt(a.dataset.animOrder) - parseInt(b.dataset.animOrder)
+        );
+        sorted.forEach((g, i) => {
+          setTimeout(() => { g.classList.add('drawn'); }, 300 + i * 150);
+        });
+      }, 600);
+    }
+
+    /* ── Typewriter Animation ──────────────────────── */
+    (function() {
+      const terminalBody = document.getElementById('hero-terminal-body');
+      if (!terminalBody) return;
+
+      const lines = terminalBody.querySelectorAll('.typewriter-line');
+      let hasPlayed = false;
+
+      /* Extract the plain text from an element (preserving structure for rebuild) */
+      function getTextContent(el) {
+        const textEl = el.querySelector('.terminal-cmd') || el.querySelector('.terminal-output');
+        return textEl ? textEl.textContent : '';
+      }
+
+      /* Type out a single line character by character */
+      function typeLine(lineEl, callback) {
+        const textEl = lineEl.querySelector('.terminal-cmd') || lineEl.querySelector('.terminal-output');
+        if (!textEl) { callback(); return; }
+
+        const fullHTML = textEl.innerHTML;
+        const fullText = textEl.textContent;
+        const isOutput = lineEl.dataset.type === 'output';
+        const speed = isOutput ? 8 : 15; /* ms per char — fast! */
+
+        /* Show the line and prompt */
+        lineEl.style.opacity = '1';
+        lineEl.classList.add('typing');
+
+        /* Create a temporary typing span */
+        const origHTML = textEl.innerHTML;
+        textEl.textContent = '';
+        textEl.style.visibility = 'visible';
+
+        /* Add cursor */
+        const cursor = document.createElement('span');
+        cursor.className = 'type-cursor';
+        textEl.after(cursor);
+
+        let charIdx = 0;
+
+        function typeNext() {
+          if (charIdx < fullText.length) {
+            textEl.textContent = fullText.slice(0, charIdx + 1);
+            charIdx++;
+            setTimeout(typeNext, speed);
+          } else {
+            /* Restore full HTML with tags */
+            textEl.innerHTML = origHTML;
+            cursor.remove();
+            lineEl.classList.remove('typing');
+            lineEl.classList.add('typed');
+            setTimeout(callback, 300);
+          }
+        }
+        typeNext();
+      }
+
+      /* Sequence through all lines */
+      function playSequence() {
+        if (hasPlayed) return;
+        hasPlayed = true;
+
+        let idx = 0;
+        function next() {
+          if (idx < lines.length) {
+            typeLine(lines[idx], () => { idx++; next(); });
+          } else {
+            /* Add a blinking cursor at the very end */
+            const lastCmd = lines[lines.length - 1].querySelector('.terminal-cmd');
+            if (lastCmd) {
+              const finalCursor = document.createElement('span');
+              finalCursor.className = 'type-cursor';
+              lastCmd.append(finalCursor);
+            }
+            /* Trigger ladder logic build animation */
+            triggerLadderAnimation();
+          }
+        }
+        next();
+      }
+
+      /* Trigger when the terminal scrolls into view */
+      const termObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setTimeout(playSequence, 400);
+            termObs.disconnect();
+          }
+        });
+      }, { threshold: 0.3 });
+      termObs.observe(terminalBody);
+    })();
+
+    /* ── HMI Terminal Typewriter ──────────────────── */
+    (function() {
+      const hmiBody = document.getElementById('hmi-terminal-body');
+      if (!hmiBody) return;
+
+      const lines = hmiBody.querySelectorAll('.typewriter-line-hmi');
+      let hasPlayed = false;
+
+      function typeLine(lineEl, callback) {
+        const textEl = lineEl.querySelector('.terminal-cmd') || lineEl.querySelector('.terminal-output');
+        if (!textEl) { callback(); return; }
+
+        const fullHTML = textEl.innerHTML;
+        const fullText = textEl.textContent;
+        const isOutput = lineEl.dataset.type === 'output';
+        const speed = isOutput ? 12 : 18;
+
+        lineEl.style.opacity = '1';
+        lineEl.classList.add('typing');
+
+        const origHTML = textEl.innerHTML;
+        textEl.textContent = '';
+        textEl.style.visibility = 'visible';
+
+        const cursor = document.createElement('span');
+        cursor.className = 'type-cursor';
+        textEl.after(cursor);
+
+        let charIdx = 0;
+
+        function typeNext() {
+          if (charIdx < fullText.length) {
+            textEl.textContent = fullText.slice(0, charIdx + 1);
+            charIdx++;
+            setTimeout(typeNext, speed);
+          } else {
+            textEl.innerHTML = origHTML;
+            cursor.remove();
+            lineEl.classList.remove('typing');
+            lineEl.classList.add('typed');
+            setTimeout(callback, 300);
+          }
+        }
+        typeNext();
+      }
+
+      function playSequence() {
+        if (hasPlayed) return;
+        hasPlayed = true;
+
+        let idx = 0;
+        function next() {
+          if (idx < lines.length) {
+            typeLine(lines[idx], () => { idx++; next(); });
+          } else {
+            const lastOutput = lines[lines.length - 1].querySelector('.terminal-output');
+            if (lastOutput) {
+              const finalCursor = document.createElement('span');
+              finalCursor.className = 'type-cursor';
+              lastOutput.append(finalCursor);
+            }
+          }
+        }
+        next();
+      }
+
+      const hmiObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setTimeout(playSequence, 400);
+            hmiObs.disconnect();
+          }
+        });
+      }, { threshold: 0.3 });
+      hmiObs.observe(hmiBody);
+    })();
+
+    /* ── Trigger HMI build when iframe scrolls into view ── */
+    (function() {
+      const iframeWrapper = document.querySelector('.hmi-iframe-wrapper');
+      const iframe = iframeWrapper ? iframeWrapper.querySelector('iframe') : null;
+      if (!iframeWrapper || !iframe) return;
+
+      let triggered = false;
+
+      const iframeObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !triggered) {
+            triggered = true;
+            /* Small delay so the user sees the empty state first */
+            setTimeout(() => {
+              iframe.contentWindow.postMessage('startBuild', '*');
+            }, 600);
+            iframeObs.disconnect();
+          }
+        });
+      }, { threshold: 0.2 });
+      iframeObs.observe(iframeWrapper);
+    })();
+  </script>
+</body>
+</html>

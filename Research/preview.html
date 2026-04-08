@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SVG Preview - Key Elements</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; padding: 30px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+  .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; text-align: center; }
+  .card.energized { border-color: #66cc66; background: #fcfffc; }
+  .card img { max-width: 100%; height: auto; }
+  .label { font-size: 12px; font-weight: 600; color: #444; margin-top: 6px; }
+  h2 { color: #2b6cb0; border-bottom: 2px solid #cbd5e0; padding-bottom: 6px; margin: 30px auto 16px; max-width: 1200px; }
+</style>
+</head>
+<body>
+<h2>Contacts</h2>
+<div class="grid">
+  <div class="card"><img src="svg/xic_contact.svg"><div class="label">XIC</div></div>
+  <div class="card energized"><img src="svg/xic_contact_on.svg"><div class="label">XIC (ON)</div></div>
+  <div class="card"><img src="svg/xio_contact.svg"><div class="label">XIO</div></div>
+  <div class="card energized"><img src="svg/xio_contact_pass.svg"><div class="label">XIO (PASS)</div></div>
+</div>
+<h2>Coils (Parentheses Style)</h2>
+<div class="grid">
+  <div class="card"><img src="svg/ote_coil.svg"><div class="label">OTE</div></div>
+  <div class="card energized"><img src="svg/ote_coil_on.svg"><div class="label">OTE (ON)</div></div>
+  <div class="card"><img src="svg/otl_coil.svg"><div class="label">OTL (Latch)</div></div>
+  <div class="card"><img src="svg/otu_coil.svg"><div class="label">OTU (Unlatch)</div></div>
+</div>
+<h2>Timers</h2>
+<div class="grid">
+  <div class="card"><img src="svg/ton_timer.svg"><div class="label">TON</div></div>
+  <div class="card energized"><img src="svg/ton_timer_active.svg"><div class="label">TON (Active)</div></div>
+  <div class="card"><img src="svg/tof_timer.svg"><div class="label">TOF</div></div>
+  <div class="card"><img src="svg/rto_timer.svg"><div class="label">RTO</div></div>
+</div>
+<h2>Oneshots / Special</h2>
+<div class="grid">
+  <div class="card"><img src="svg/ons_oneshot.svg"><div class="label">ONS</div></div>
+  <div class="card"><img src="svg/res_reset.svg"><div class="label">RES</div></div>
+  <div class="card"><img src="svg/jsr_jump.svg"><div class="label">JSR</div></div>
+</div>
+<h2>Comparison Example</h2>
+<div class="grid">
+  <div class="card" style="grid-column: span 2;"><img src="svg/equ_comparison.svg"><div class="label">EQU - Equal</div></div>
+  <div class="card" style="grid-column: span 2;"><img src="svg/grt_comparison.svg"><div class="label">GRT - Greater Than</div></div>
+</div>
+<h2>Math Example</h2>
+<div class="grid">
+  <div class="card" style="grid-column: span 2;"><img src="svg/add_math.svg"><div class="label">ADD (3 operands)</div></div>
+  <div class="card" style="grid-column: span 2;"><img src="svg/mov_math.svg"><div class="label">MOV (2 operands)</div></div>
+</div>
+<h2>Program Control Example</h2>
+<div class="grid">
+  <div class="card" style="grid-column: span 2;"><img src="svg/jsr_jump.svg"><div class="label">JSR - Jump to Subroutine</div></div>
+  <div class="card" style="grid-column: span 2;"><img src="svg/sqo_sequencer.svg"><div class="label">SQO - Sequencer Output</div></div>
+</div>
+<h2>Timer Example</h2>
+<div class="grid">
+  <div class="card" style="grid-column: span 2;"><img src="svg/ton_timer.svg"><div class="label">TON Timer (large text for editing)</div></div>
+  <div class="card energized" style="grid-column: span 2;"><img src="svg/ton_timer_active.svg"><div class="label">TON Timer (Active / Energized)</div></div>
+</div>
+<h2>Complete Rungs</h2>
+<div class="grid">
+  <div class="card energized" style="grid-column: span 2;"><img src="svg/complete_rung.svg"><div class="label">Full Rung (Energized)</div></div>
+  <div class="card" style="grid-column: span 2;"><img src="svg/complete_rung_off.svg"><div class="label">Full Rung (Unenergized)</div></div>
+</div>
+</body>
+</html>
