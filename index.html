@@ -958,7 +958,215 @@
         sorted.forEach((g, i) => {
           setTimeout(() => { g.classList.add('drawn'); }, 300 + i * 150);
         });
+
+        /* Start PLC simulation after all groups are drawn */
+        const drawDone = 300 + (sorted.length - 1) * 150 + 800;
+        setTimeout(simulateLadder, drawDone);
       }, 600);
+    }
+
+    /* ── PLC Simulation Animation ─────────────────── */
+    function simulateLadder() {
+      const svg = document.querySelector('.ladder-svg');
+      if (!svg) return;
+
+      const GREEN = '#22c55e';
+      const GREEN_BG = '#dcfce7';
+
+      var grp = function(n) {
+        return svg.querySelector('g[data-anim-order="' + n + '"]');
+      };
+
+      /* ── Save original colors before first run ───── */
+      var originals = {};
+      svg.querySelectorAll('g[data-anim-order]').forEach(function(g) {
+        var key = g.dataset.animOrder;
+        originals[key] = { lines: [], paths: [], texts: [], circles: [] };
+        g.querySelectorAll('line').forEach(function(l) {
+          originals[key].lines.push(l.getAttribute('stroke'));
+        });
+        g.querySelectorAll('path').forEach(function(p) {
+          originals[key].paths.push(p.getAttribute('stroke'));
+        });
+        g.querySelectorAll('text').forEach(function(t) {
+          originals[key].texts.push(t.getAttribute('fill'));
+        });
+        g.querySelectorAll('circle').forEach(function(c) {
+          originals[key].circles.push({ stroke: c.getAttribute('stroke'), fill: c.getAttribute('fill') });
+        });
+      });
+
+      /* ── Reset everything back to original state ── */
+      function resetAll() {
+        svg.querySelectorAll('g[data-anim-order]').forEach(function(g) {
+          var key = g.dataset.animOrder;
+          var orig = originals[key];
+          /* Remove any sim-bg rects we added */
+          g.querySelectorAll('rect[rx="6"]').forEach(function(r) { r.remove(); });
+          /* Restore line strokes */
+          var lines = g.querySelectorAll('line');
+          lines.forEach(function(l, i) {
+            l.style.transition = 'stroke 0.4s ease';
+            l.setAttribute('stroke', orig.lines[i] || '#475569');
+          });
+          /* Restore path strokes */
+          var paths = g.querySelectorAll('path');
+          paths.forEach(function(p, i) {
+            p.style.transition = 'stroke 0.4s ease';
+            p.setAttribute('stroke', orig.paths[i] || '#1e293b');
+          });
+          /* Restore text fills */
+          var texts = g.querySelectorAll('text');
+          texts.forEach(function(t, i) {
+            t.style.transition = 'fill 0.4s ease';
+            t.setAttribute('fill', orig.texts[i] || '#94a3b8');
+          });
+          /* Restore circles */
+          var circles = g.querySelectorAll('circle');
+          circles.forEach(function(c, i) {
+            var o = orig.circles[i] || { stroke: '#94a3b8', fill: 'none' };
+            c.style.transition = 'stroke 0.4s ease, fill 0.4s ease';
+            c.setAttribute('stroke', o.stroke);
+            c.setAttribute('fill', o.fill || 'none');
+          });
+        });
+      }
+
+      /* Turn all lines/paths in a group green */
+      function energizeWire(group) {
+        group.querySelectorAll('line').forEach(function(l) {
+          l.style.transition = 'stroke 0.3s ease';
+          l.setAttribute('stroke', GREEN);
+        });
+      }
+
+      /* Turn a contact/coil green with light-green background */
+      function energizeContact(group, bgX, bgY, bgW, bgH) {
+        var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', bgX);
+        rect.setAttribute('y', bgY);
+        rect.setAttribute('width', bgW);
+        rect.setAttribute('height', bgH);
+        rect.setAttribute('rx', '6');
+        rect.setAttribute('fill', GREEN_BG);
+        rect.setAttribute('opacity', '0');
+        rect.style.transition = 'opacity 0.4s ease';
+        group.insertBefore(rect, group.firstChild);
+        requestAnimationFrame(function() { rect.setAttribute('opacity', '0.7'); });
+
+        group.querySelectorAll('line, path').forEach(function(el) {
+          el.style.transition = 'stroke 0.3s ease';
+          el.setAttribute('stroke', GREEN);
+        });
+        group.querySelectorAll('text').forEach(function(t) {
+          t.style.transition = 'fill 0.3s ease';
+          t.setAttribute('fill', GREEN);
+        });
+      }
+
+      /* Find TON timer elements */
+      var tonGroup = grp(4);
+      var tonTexts = Array.from(tonGroup.querySelectorAll('text'));
+      /* Accum text: the one near y=118 that shows the accumulator value */
+      var accumText = tonTexts.find(function(t) {
+        return parseFloat(t.getAttribute('y')) > 110 && parseFloat(t.getAttribute('x')) > 410;
+      });
+      var tonCircles = Array.from(tonGroup.querySelectorAll('circle'));
+      var enCircle = tonCircles.find(function(c) { return parseFloat(c.getAttribute('cy')) < 95; });
+      var dnCircle = tonCircles.find(function(c) { return parseFloat(c.getAttribute('cy')) >= 95; });
+      var enLabel = tonTexts.find(function(t) {
+        return t.textContent === 'EN' && parseFloat(t.getAttribute('x')) > 520;
+      });
+      var dnLabel = tonTexts.find(function(t) {
+        return t.textContent === 'DN' && parseFloat(t.getAttribute('x')) > 520;
+      });
+
+      /* Delay helper */
+      function wait(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+      async function runSimulation() {
+        /* 1. Both PRX_2 contacts + their input wires go green simultaneously */
+        energizeWire(grp(1));
+        energizeContact(grp(2), 133, 46, 84, 76);
+        energizeWire(grp(6));
+        energizeContact(grp(7), 133, 186, 84, 76);
+
+        await wait(500);
+
+        /* 2. Green line extends from PRX_2 to TON (Rung 14) and to T4:2.DN (Rung 15) */
+        energizeWire(grp(3));
+        energizeWire(grp(8));
+
+        await wait(400);
+
+        /* 3. TON EN activates, accumulator starts counting 0 → 3000 */
+        if (enCircle) {
+          enCircle.style.transition = 'stroke 0.3s ease, fill 0.3s ease';
+          enCircle.setAttribute('stroke', GREEN);
+          enCircle.setAttribute('fill', GREEN);
+        }
+        if (enLabel) {
+          enLabel.style.transition = 'fill 0.3s ease';
+          enLabel.setAttribute('fill', GREEN);
+        }
+
+        /* Count accumulator over 3 seconds */
+        await new Promise(function(resolve) {
+          var start = performance.now();
+          var duration = 3000;
+          function tick(now) {
+            var progress = Math.min((now - start) / duration, 1);
+            if (accumText) accumText.textContent = Math.round(progress * 3000);
+            if (progress < 1) requestAnimationFrame(tick);
+            else resolve();
+          }
+          requestAnimationFrame(tick);
+        });
+
+        await wait(200);
+
+        /* 4. TON DN activates (timer done) */
+        if (dnCircle) {
+          dnCircle.style.transition = 'stroke 0.3s ease, fill 0.3s ease';
+          dnCircle.setAttribute('stroke', GREEN);
+          dnCircle.setAttribute('fill', GREEN);
+        }
+        if (dnLabel) {
+          dnLabel.style.transition = 'fill 0.3s ease';
+          dnLabel.setAttribute('fill', GREEN);
+        }
+
+        await wait(400);
+
+        /* 5. Rung 14 wire from TON to right rail goes green
+              + Rung 15 T4:2.DN contact goes green (timer done bit is now true) */
+        energizeWire(grp(5));
+        energizeContact(grp(9), 313, 186, 94, 76);
+
+        await wait(400);
+
+        /* 6. Rung 15 wire from T4:2.DN to Valve_2 */
+        energizeWire(grp(10));
+
+        await wait(400);
+
+        /* 7. Valve_2 OTE coil energizes */
+        energizeContact(grp(11), 536, 186, 88, 76);
+
+        await wait(400);
+
+        /* 8. Rung 15 final wire to right rail */
+        energizeWire(grp(12));
+
+        /* 9. Hold for 2 seconds, then reset and repeat */
+        await wait(2000);
+        resetAll();
+        if (accumText) accumText.textContent = '0';
+        await wait(800);
+        runSimulation();
+      }
+
+      runSimulation();
     }
 
     /* ── Typewriter Animation ──────────────────────── */
