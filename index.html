@@ -199,11 +199,31 @@
     }
     .brand-logos {
       display: flex; justify-content: center; align-items: center;
-      gap: 48px; flex-wrap: wrap; opacity: 0.45;
+      gap: 56px; flex-wrap: wrap;
     }
-    .brand-logos span {
-      font-size: 1.1rem; font-weight: 700; letter-spacing: 0.03em;
-      color: #a1a1aa;
+    .brand-logo {
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      min-width: 130px; opacity: 0.85; transition: opacity 0.25s ease;
+    }
+    .brand-logo:hover { opacity: 1; }
+    .brand-logo-box {
+      height: 56px; display: flex; align-items: center; justify-content: center;
+    }
+    .brand-logo img, .brand-logo svg {
+      max-height: 48px; width: auto; max-width: 180px;
+      object-fit: contain; display: block;
+    }
+    .brand-logo .logo-siemens { max-height: 36px; }
+    .brand-logo span {
+      font-size: 0.95rem; font-weight: 700; letter-spacing: 0.02em;
+      color: #a1a1aa; text-align: center; line-height: 1.3;
+    }
+    @media (max-width: 768px) {
+      .brand-logos { gap: 32px; }
+      .brand-logo { min-width: 100px; }
+      .brand-logo-box { height: 44px; }
+      .brand-logo img, .brand-logo svg { max-height: 38px; }
+      .brand-logo .logo-siemens { max-height: 28px; }
     }
 
     /* ── Section Headers ───────────────────────────── */
@@ -500,7 +520,12 @@
   <nav>
     <div class="container">
       <a href="#" class="nav-logo">
-        <img src="https://automatika.us/wp-content/uploads/2023/02/cropped-automatika_logo.png" alt="Automatika logo" />
+        <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-label="Automatika logo">
+          <rect x="1"  y="1"  width="13" height="13" rx="2" fill="#22c55e"/>
+          <rect x="18" y="1"  width="13" height="13" rx="2" fill="#ef4444"/>
+          <rect x="1"  y="18" width="13" height="13" rx="2" fill="#ec4899"/>
+          <rect x="18" y="18" width="13" height="13" rx="2" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+        </svg>
         <span>Automatika</span>
       </a>
       <div class="nav-links">
@@ -691,12 +716,53 @@
     <div class="container">
       <p>Works with the platforms you already use</p>
       <div class="brand-logos">
-        <span>Rockwell / Studio 5000</span>
-        <span>Siemens / TIA Portal</span>
-        <span>CODESYS</span>
-        <span>Beckhoff / TwinCAT</span>
-        <span>Mitsubishi</span>
-        <span>Omron</span>
+        <div class="brand-logo">
+          <div class="brand-logo-box">
+            <img width="48" height="48" src="https://cdn.simpleicons.org/rockwellautomation/CC0000" alt="Rockwell Automation" onerror="this.style.display='none'" />
+          </div>
+          <span>Rockwell / Studio 5000</span>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-logo-box">
+            <img class="logo-siemens" width="140" height="34" src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Siemens-logo.svg" alt="Siemens" onerror="this.onerror=null;this.src='https://cdn.simpleicons.org/siemens/009999';" />
+          </div>
+          <span>Siemens / TIA Portal</span>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-logo-box">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" aria-label="CODESYS">
+              <rect x="6" y="14" width="36" height="4" rx="1" fill="#E30613"/>
+              <rect x="6" y="22" width="28" height="4" rx="1" fill="#E30613"/>
+              <rect x="6" y="30" width="20" height="4" rx="1" fill="#E30613"/>
+            </svg>
+          </div>
+          <span>CODESYS</span>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-logo-box">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" aria-label="Beckhoff">
+              <rect x="8" y="12" width="6" height="24" fill="#CC0000"/>
+              <rect x="18" y="12" width="6" height="24" fill="#CC0000"/>
+              <path d="M 28 12 L 40 24 L 28 36 Z" fill="#CC0000"/>
+            </svg>
+          </div>
+          <span>Beckhoff / TwinCAT</span>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-logo-box">
+            <img width="48" height="48" src="https://cdn.simpleicons.org/mitsubishi/E60012" alt="Mitsubishi" onerror="this.style.display='none'" />
+          </div>
+          <span>Mitsubishi</span>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-logo-box">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" aria-label="Omron">
+              <circle cx="24" cy="24" r="16" fill="none" stroke="#0080C8" stroke-width="4"/>
+              <circle cx="24" cy="24" r="5" fill="#0080C8"/>
+            </svg>
+          </div>
+          <span>Omron</span>
+        </div>
       </div>
     </div>
   </section>
@@ -920,7 +986,12 @@
   <footer>
     <div class="container footer-inner">
       <div class="footer-brand">
-        <img src="https://automatika.us/wp-content/uploads/2023/02/cropped-automatika_logo.png" alt="Automatika" />
+        <svg width="28" height="28" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-label="Automatika logo">
+          <rect x="1"  y="1"  width="13" height="13" rx="2" fill="#22c55e"/>
+          <rect x="18" y="1"  width="13" height="13" rx="2" fill="#ef4444"/>
+          <rect x="1"  y="18" width="13" height="13" rx="2" fill="#ec4899"/>
+          <rect x="18" y="18" width="13" height="13" rx="2" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+        </svg>
         <span>&copy; 2026 Automatika</span>
       </div>
       <div class="footer-links">
